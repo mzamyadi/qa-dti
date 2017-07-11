@@ -1,0 +1,66 @@
+#!/usr/bin/env python
+"""
+Usage:
+    qc-fbirn-fmri <nifti> <output_prefix>
+
+Arguments:
+    nifti:         4D nifti file of fBIRN phantom
+    output_prefix: full path to output prefix
+
+Details:
+    Runs the included 'analyze_fmri_phantom.m' script on fbirn phantom data.
+
+    Outputs:
+        <output_prefix>_images.jpg
+        <output_prefix>_plots.jpg
+        <output_prefix>_stats.csv
+
+    Requires MATLAB.
+
+    For the original code, see https://www.nitrc.org/projects/fbirn/
+    For details, see Friedman et al, 2006. Report on a multicenter fMRI quality
+    assurance protocol. Journal of Magnetic Resonance Imaging. 23(6); 827-839.
+
+    Adapted from the fBIRN pipeline by Sofia Chavez, 2014.
+    Packaged and maintained by Joseph Viviano, 2016.
+"""
+
+import os, sys
+import logging
+import subprocess as proc
+
+
+logging.basicConfig(level=logging.WARN, format="[%(name)s] %(levelname)s: %(message)s")
+logger = logging.getLogger(os.path.basename(__file__))
+
+
+def run(cmd):
+    """Runs commands in a subshell and returns error messages if there is a problem."""
+    p = proc.Popen(cmd, shell=True, stdout=proc.PIPE, stderr=proc.PIPE)
+    out, err = p.communicate()
+
+    if p.returncode != 0:
+        logger.error('{} failed with returncode {}.\nSTDERR: {}'.format(cmd, p.returncode, err))
+        sys.exit(1)
+
+
+def main(nifti, output_prefix):
+
+    logging.info('Starting')
+
+    if not os.path.isdir(os.path.dirname(os.path.abspath(output_prefix))):
+        logger.error('ERROR: Output directory {} does not exist.'.format(os.path.dirname(os.path.abspath(output_prefix))))
+        sys.exit(1)
+
+    matlab_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'matlab')
+    cmd = (r"addpath(genpath('{}')); analyze_fmri_phantom('{}','{}')".format(
+        matlab_path, nifti, output_prefix))
+    run('matlab -nodisplay -nosplash -r "{}"'.format(cmd))
+
+
+if __name__ == '__main__':
+    if len(sys.argv) == 3:
+        main(sys.argv[1], sys.argv[2])
+    else:
+        print(__doc__)
+
