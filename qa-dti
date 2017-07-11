@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
 Usage:
-    qc-fbirn-dti <nifti> <bvec> <bval> <output_prefix> <accel>
+    qa-dti <nifti> <bvec> <bval> <output_prefix> <accel>
 
 Arguments:
     nifti:         4D nifti file of fbirn phantom
@@ -42,7 +42,8 @@ import subprocess as proc
 
 logging.basicConfig(level=logging.WARN, format="[%(name)s] %(levelname)s: %(message)s")
 logger = logging.getLogger(os.path.basename(__file__))
-tmpdir = tempfile.mkdtemp(prefix='qc-')
+tmpdir = tempfile.mkdtemp(prefix='qa-dti-')
+
 
 def shutdown(returncode=0):
     """removes temporary files and exits"""
@@ -57,7 +58,7 @@ def run(cmd):
 
     if p.returncode != 0:
         logger.error('{} failed with returncode {}.\nSTDERR: {}'.format(cmd, p.returncode, err))
-        shutdown(returncode=1)
+        shutdown(returncode=p.returncode)
 
 
 def main(nifti, bvec, bval, output_prefix, accel='n'):
@@ -80,12 +81,12 @@ def main(nifti, bvec, bval, output_prefix, accel='n'):
     run('bet {t}/tmp_b0.nii.gz {t}/tmp_b0_bet.nii.gz -m -f 0.3 -R'.format(t=tmpdir))
     run('dtifit -k {nifti} -m {t}/tmp_b0_bet_mask.nii.gz -r {bvec} -b {bval} -o {t}/dtifit'.format(
                                    nifti=nifti, t=tmpdir, bvec=bvec, bval=bval))
-
-    fa = os.path.join('{}/dtifit_FA.nii.gz'.format(tmpdir))
+    fa = os.path.join(tmpdir, 'dtifit_FA.nii.gz')
     if not os.path.isfile(fa):
         logger.error('ERROR: Failed to calculate FA from {}'.format(nifti))
         shutdown(returncode=1)
 
+    # run analyze_dti_phantom.m (matlab script)
     matlab_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'matlab')
     cmd = (r"addpath(genpath('{}')); analyze_dti_phantom('{}','{}','{}','{}','{}')".format(
         matlab_path, nifti, fa, bval, output_prefix, accel))
