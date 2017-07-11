@@ -4,9 +4,9 @@ Usage:
     qa-dti <nifti> <bvec> <bval> <output_prefix> <accel>
 
 Arguments:
-    nifti:         4D nifti file of fbirn phantom
-    bvec:          bvec file from fbirn phantom
-    bval:          bval file from fbirn phantom
+    nifti:         4D nifti file of spherical phantom
+    bvec:          bvec file from spherical phantom
+    bval:          bval file from spherical phantom
     output_prefix: full path to output prefix
     accel:         y/n, y=nyquist accelerated data [default=n]
 
@@ -62,7 +62,7 @@ def run(cmd):
 
 
 def main(nifti, bvec, bval, output_prefix, accel='n'):
-    """Runs FSL dtifit to generate an FA map before running qc_fbirn_dti.m"""
+    """Runs FSL dtifit to generate an FA map before running analyze_dti_phantom.m"""
 
     logging.info('Starting')
 
