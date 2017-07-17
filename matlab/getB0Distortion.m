@@ -50,9 +50,9 @@ showb0dist(:,round(cmaskminave))=maxv;
 showb0dist(:,round(cmaskmaxave))=maxv;
 
 h1=figure(1)
-set(h1,'Visible', 'off');
-h1.Units='inches'
-h1.Position=[10 7 10 10];
+set(h1, 'Visible', 'off');
+set(h1, 'Position', [10 7 10 10]);
+set(h1, 'Units', 'inches');
 imagesc(showb0dist)
 axis image
 strtitle=strcat('RatioB0=',num2str(RatioB0),'/diax=',num2str(diax),'/diay=',num2str(diay))
