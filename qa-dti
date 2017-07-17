@@ -68,7 +68,7 @@ def main(nifti, bvec, bval, output_prefix, accel='n'):
     fa = os.path.join(tmpdir, 'dtifit_FA.nii.gz')
     if not os.path.isfile(fa):
         logger.error('Failed to calculate FA from {}'.format(nifti))
-        logger.debug('Files found in {t}:\n{files}'.format(t=tmpdir, files=os.listdir(t)))
+        logger.debug('Files found in {t}:\n{files}'.format(t=tmpdir, files=os.listdir(tmpdir)))
         shutdown(returncode=1)
 
     # run analyze_dti_phantom.m (matlab script)
