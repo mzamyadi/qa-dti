@@ -1,44 +1,36 @@
 #!/usr/bin/env python
 """
-Usage:
-    qa-dti <nifti> <bvec> <bval> <output_prefix> <accel>
+Compute an FA map of the input file, and then runs the included MATLAB
+'analyze_dti_phantom.m' script on these data.
 
-Arguments:
-    nifti:         4D nifti file of spherical phantom
-    bvec:          bvec file from spherical phantom
-    bval:          bval file from spherical phantom
-    output_prefix: full path to output prefix
-    accel:         y/n, y=nyquist accelerated data [default=n]
+Outputs:
+    ${output_prefix}B0Distortion-NPAR.jpg
+    ${output_prefix}CentralSlice-NPAR.jpg
+    ${output_prefix}DiffImgs-NPAR.jpg
+    ${output_prefix}DiffMasks-NPAR.jpg
+    ${output_prefix}MaskCentralSlice-NPAR.jpg
+    ${output_prefix}NyquistRatio-NPAR.jpg
+    ${output_prefix}Plot-EddyCurrentDist-NPAR.jpg
+    ${output_prefix}Section2.3.1_SNR_ADC.csv
+    ${output_prefix}Section2.3.2_B0DistortionRatio.csv
+    ${output_prefix}Section2.3.3_EddyCurrentDistortions.csv
+    ${output_prefix}Section2.3.4_AveNyqRatio.csv
+    ${output_prefix}Section2.3.5_FAvalues.csv
+    ${output_prefix}SNRImgs-NPAR.jpg
+    ${output_prefix}SNRplots-NPAR.jpg
+    ${output_prefix}StdPlotsHist-NPAR.jpg
 
-Details:
-    Compute an FA map of the input file, and then runs the included
-    'analyze_dti_phantom.m' script on these data.
+Depends on FSL & MATLAB.
+Designed by Sofia Chavez, packaged and maintained by Joseph Viviano 2014-17.
 
-    Outputs:
-        <output_prefix>_stats.csv
-        <output_prefix>_SNR_each-b0.csv
-        <output_prefix>_SNR_each-DWI.csv
-        <output_prefix>_nyq_each-b0.csv
-        <output_prefix>_PXShift.csv
-        <output_prefix>_b0_diff-roi-noise-hist.jpg
-        <output_prefix>_b0_noise-hist.jpg
-        <output_prefix>_DWI_diff-roi-noise-hist.jpg
-        <output_prefix>_DWI_noise-hist.jpg
-        <output_prefix>_SNR_avg-std.jpg
-        <output_prefix>_SNR_individual.jpg
-        <output_prefix>_SNR_Nyq_eachb0.jpg
-        <output_prefix>_FAvalues.jpg
-
-    Depends on FSL & MATLAB.
-
-    Designed by Sofia Chavez, 2014-2015.
-    Code packaged and maintained by Joseph Viviano, 2016.
+See qa-dti --help for usage.
 """
 import os, sys
 import tempfile
 import shutil
 import logging
 import subprocess as proc
+import argparse
 
 logging.basicConfig(level=logging.WARN, format="[%(name)s] %(levelname)s: %(message)s")
 logger = logging.getLogger(os.path.basename(__file__))
@@ -56,6 +48,8 @@ def run(cmd):
     p = proc.Popen(cmd, shell=True, stdout=proc.PIPE, stderr=proc.PIPE)
     out, err = p.communicate()
 
+    logger.debug('{}:\n{}'.format(cmd, out))
+
     if p.returncode != 0:
         logger.error('{} failed with returncode {}.\nSTDERR: {}'.format(cmd, p.returncode, err))
         shutdown(returncode=p.returncode)
@@ -64,26 +58,17 @@ def run(cmd):
 def main(nifti, bvec, bval, output_prefix, accel='n'):
     """Runs FSL dtifit to generate an FA map before running analyze_dti_phantom.m"""
 
-    logging.info('Starting')
-
-    # check input options
-    if accel not in {'y', 'n'}:
-        logger.error("acceleration option must be 'y' or 'n', submitted '{}'".format(accel))
-        shutdown(returncode=1)
-
-    if not os.path.isdir(os.path.dirname(os.path.abspath(output_prefix))):
-        logger.error('output directory {} does not exist.'.format(
-            os.path.dirname(os.path.abspath(output_prefix))))
-        shutdown(returncode=1)
-
     # preprocessing: make FA map
     run('fslroi {nifti} {t}/tmp_b0.nii.gz 0 1'.format(nifti=nifti, t=tmpdir))
     run('bet {t}/tmp_b0.nii.gz {t}/tmp_b0_bet.nii.gz -m -f 0.3 -R'.format(t=tmpdir))
     run('dtifit -k {nifti} -m {t}/tmp_b0_bet_mask.nii.gz -r {bvec} -b {bval} -o {t}/dtifit'.format(
                                    nifti=nifti, t=tmpdir, bvec=bvec, bval=bval))
+
+    # ensure FA map is in the tmp directory
     fa = os.path.join(tmpdir, 'dtifit_FA.nii.gz')
     if not os.path.isfile(fa):
-        logger.error('ERROR: Failed to calculate FA from {}'.format(nifti))
+        logger.error('Failed to calculate FA from {}'.format(nifti))
+        logger.debug('Files found in {t}:\n{files}'.format(t=tmpdir, files=os.listdir(t)))
         shutdown(returncode=1)
 
     # run analyze_dti_phantom.m (matlab script)
@@ -96,10 +81,36 @@ def main(nifti, bvec, bval, output_prefix, accel='n'):
 
 
 if __name__ == '__main__':
-    if len(sys.argv) == 6:
-        main(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], accel=sys.argv[5])
-    elif len(sys.argv) == 5:
-        main(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
+    logger.info('Starting')
+
+    argparser = argparse.ArgumentParser()
+    argparser.add_argument('nifti', help='4D nifti file of spherical phantom')
+    argparser.add_argument('bvec', help='bvec file from spherical phantom')
+    argparser.add_argument('bval', help='bval file from spherical phantom')
+    argparser.add_argument('output_prefix', help='full path to output prefix')
+    argparser.add_argument('-a', '--accel', help='y/n, y=nyquist accelerated data [default=n]')
+    argparser.add_argument('-v', '--verbose', action="count", help='turns on debug messages')
+    args = argparser.parse_args()
+
+    # debug mode
+    if args.verbose > 0:
+        logger.setLevel(logging.DEBUG)
     else:
-        print(__doc__)
+        logger.setLevel(logging.WARN)
+
+    # acceleration on/off
+    if not args.accel:
+        args.accel = 'n'
+
+    if args.accel not in ['y', 'n']:
+        logger.error('accel={} invalid, should be y/n'.format(args.accel))
+        shutdown(returncode=1)
+
+    # ensure output directory exists
+    output_dir = os.path.dirname(os.path.abspath(args.output_prefix))
+    if not os.path.isdir(output_dir):
+        logger.error('output directory {} does not exist.'.format(output_dir))
+        shutdown(returncode=1)
+
+    main(args.nifti, args.bvec, args.bval, args.output_prefix, accel=args.accel)
 
