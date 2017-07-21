@@ -8,7 +8,7 @@ mask=DWI*0;
 lenfillb0(1:nb0)=0;
 lenfillchk=Nx*Ny/2;
 
-numr=floor(sqrt(numimgs))
+numr=ceil(sqrt(numimgs))
 numc=numr+1;
 
 for i=1:numimgs
@@ -155,7 +155,7 @@ if numr>2
     for i=1:numimgs
         subplot(numr,numc,i)
         imagesc(DWI(:,:,i))
-         if i<nb0+1
+        if i<nb0+1
             title('nDWI')
         else
             title('DWI')

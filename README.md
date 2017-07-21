@@ -9,7 +9,7 @@ All code written by Sofia Chavez 2014-2017. Packaged and maintained by Joseph D 
 
 **quickstart**
 
-- requires the installation of MATLAB (core), python 2.7, and FSL.
+- requires the installation of MATLAB > 2014a (core), python 2.7, and FSL.
 - to install, add this folder to your path: `export PATH="${PATH}:/path/to/qa-dti"`.
 - `qa-dti --help` for usage.
 - `qa-dti --verbose` for debugging outputs.
