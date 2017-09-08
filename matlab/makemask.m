@@ -150,7 +150,7 @@ if numr>2
 
     h1=figure(1)
     set(h1, 'Visible', 'off');
-    set(h1, 'Position', [10 7 20 10]);
+    set(h1, 'Position', [0 0 1300 650]);
     set(h1, 'Units', 'inches');
     for i=1:numimgs
         subplot(numr,numc,i)
@@ -165,7 +165,7 @@ if numr>2
 
     h2=figure(2)
     set(h2, 'Visible', 'off');
-    set(h2, 'Position', [10 7 20 10]);
+    set(h2, 'Position', [0 0 1300 650]);
     set(h2, 'Units', 'inches')
     for i=1:numimgs
         subplot(numr,numc,i)

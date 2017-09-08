@@ -51,7 +51,7 @@ showb0dist(:,round(cmaskmaxave))=maxv;
 
 h1=figure(1)
 set(h1, 'Visible', 'off');
-set(h1, 'Position', [10 7 10 10]);
+set(h1, 'Position', [0 0 1300 650]);
 set(h1, 'Units', 'inches');
 imagesc(showb0dist)
 axis image

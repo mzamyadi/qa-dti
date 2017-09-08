@@ -49,7 +49,7 @@ cmax=maxabs*1.05;
 h1=figure(1)
 %h1.Units='inches' % this isn't compatible with the set command below in older version of matlab (jdv)
 set(h1, 'Visible', 'off');
-set(h1, 'Position', [10 7 20 7]);
+set(h1, 'Position', [0 0 1300 650]);
 numr=2;
 numc=nd;
 
@@ -114,7 +114,7 @@ ftot2=fit(x',ntot2','gauss1');
 
 h2=figure(2)
 set(h2,'Visible', 'off');
-set(h2, 'Position', [1000 691 1313 643]);
+set(h2, 'Position', [0 0 1300 650]);
 subplot(1,3,1)
 for i=1:nd
     stdndwi(i)=fndwi{i}.c1
@@ -178,7 +178,7 @@ end
 
 h3=figure(3)
 set(h3, 'Visible', 'off');
-set(h3, 'Position', [1000 691 1313 643]);
+set(h3, 'Position', [0 0 1300 650]);
 for i=1:(2*nb0)
     subplot(2,nb0,i)
     tmp=DWI(:,:,i);% fig1name=strcat(DIRfig,'DiffImgs-',PAR)
@@ -202,7 +202,7 @@ end
 
 h4=figure(4)
 set(h4, 'Visible', 'off');
-set(h4, 'Position', [1000 691 1313 643]);
+set(h4, 'Position', [0 0 1300 650]);
 plot(SNRcc,'k-')
 hold on
 plot(SNRcc(1:nb0),'ro')

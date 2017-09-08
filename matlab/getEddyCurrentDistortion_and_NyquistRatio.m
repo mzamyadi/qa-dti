@@ -24,7 +24,7 @@ clear tmp*
 
 h3=figure(3)
 set(h3, 'Visible', 'off');
-set(h3, 'Position', [10 7 20 10]);
+set(h3, 'Position', [0 0 1300 650]);
 set(h3, 'Units', 'inches');
 
 for i=2:numimgs
@@ -81,7 +81,7 @@ end
 
 h4=figure(4)
 set(h4,'Visible', 'off');
-set(h4, 'Position', [10 7 15 10]);
+set(h4, 'Position', [0 0 1300 650]);
 set(h4, 'Units', 'inches');
 avevoxsh=mean(avepixsh2(nb0+1:numimgs))
 errvoxsh=mean(avepixsh2(2:nb0))
@@ -101,7 +101,7 @@ title(['Pixel Shifts for Phantom: avevoxshift(err)=',num2str(avevoxsh),'(',num2s
 h5=figure(5)
 set(h5, 'Visible', 'off');
 set(h5, 'Units', 'inches');
-set(h5, 'Position', [10 7 20 5]);
+set(h5, 'Position', [0 0 1300 650]);
 
 for i=1:nb0
     tmp=DWI(:,:,i);

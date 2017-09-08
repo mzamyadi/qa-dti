@@ -128,7 +128,7 @@ try
     h1 = figure(1)
     set(h1, 'Visible', 'off');
     h1.Units='inches'
-    h1.Position=[10 7 15 10];
+    h1.Position=[0 0 1300 650];
 
     subplot(2,2,1)
     imagesc(FA, [0 0.1]);
