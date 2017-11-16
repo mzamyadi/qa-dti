@@ -3,8 +3,8 @@ function [avevoxsh,errvoxsh,NyqRatio]=getEddyCurrentDistortion_and_NyquistRatio(
 close all
 
 [Nx, Ny, numimgs] = size(DWI);
-numr=floor(sqrt(numimgs))
-numc=numr+1;
+numr=ceil(sqrt(numimgs))
+numc=numr;
 
 mask=makemask(DWI,nb0,PAR); % gives figs 1 & 2
 
@@ -24,8 +24,9 @@ clear tmp*
 
 h3=figure(3)
 set(h3, 'Visible', 'off');
-set(h3, 'Position', [0 0 1300 650]);
 set(h3, 'Units', 'inches');
+set(h3, 'Position', [10 7 20 10]);
+
 
 for i=2:numimgs
     subplot(numr,numc,i)
@@ -81,8 +82,9 @@ end
 
 h4=figure(4)
 set(h4,'Visible', 'off');
-set(h4, 'Position', [0 0 1300 650]);
 set(h4, 'Units', 'inches');
+set(h4, 'Position', [10 7 15 10]);
+
 avevoxsh=mean(avepixsh2(nb0+1:numimgs))
 errvoxsh=mean(avepixsh2(2:nb0))
 plot(avepixsh2,'b*-')
@@ -101,7 +103,7 @@ title(['Pixel Shifts for Phantom: avevoxshift(err)=',num2str(avevoxsh),'(',num2s
 h5=figure(5)
 set(h5, 'Visible', 'off');
 set(h5, 'Units', 'inches');
-set(h5, 'Position', [0 0 1300 650]);
+set(h5, 'Position', [10 7 20 5]);
 
 for i=1:nb0
     tmp=DWI(:,:,i);

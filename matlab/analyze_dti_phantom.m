@@ -59,6 +59,11 @@ try
     dims = size(dwi.vol);
     central_slice = ceil(dims(3)/2);
     DWI = mean(dwi.vol(:,:, central_slice-1:central_slice+1, :), 3);
+    
+    DWIrot=imrotate(DWI,90); % get PE along vertical direction
+    clear DWI
+    DWI=DWIrot;
+    
     [Nx, Ny, numimgs] = size(DWI);
 
     % load FA, taking central slice only
@@ -127,8 +132,8 @@ try
 
     h1 = figure(1)
     set(h1, 'Visible', 'off');
-    h1.Units='inches'
-    h1.Position=[0 0 1300 650];
+    set(h1, 'Units', 'inches');
+    h1.Position=[10 7 15 10];
 
     subplot(2,2,1)
     imagesc(FA, [0 0.1]);

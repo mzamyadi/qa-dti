@@ -25,12 +25,12 @@ rmasksort=sort(rmask);
 lensm=length(rmask)
 rmaskminave=mean(rmasksort(1:10))
 rmaskmaxave=mean(rmasksort(lensm-9:lensm))
-diax=rmaskmaxave-rmaskminave
+diay=rmaskmaxave-rmaskminave
 
 cmasksort=sort(cmask);
 cmaskminave=mean(cmasksort(1:10))
 cmaskmaxave=mean(cmasksort(lensm-9:lensm))
-diay=cmaskmaxave-cmaskminave
+diax=cmaskmaxave-cmaskminave
 
 RatioB0=diay/diax
 
@@ -51,8 +51,9 @@ showb0dist(:,round(cmaskmaxave))=maxv;
 
 h1=figure(1)
 set(h1, 'Visible', 'off');
-set(h1, 'Position', [0 0 1300 650]);
 set(h1, 'Units', 'inches');
+set(h1, 'Position', [10 7 10 10]);
+
 imagesc(showb0dist)
 axis image
 strtitle=strcat('RatioB0=',num2str(RatioB0),'/diax=',num2str(diax),'/diay=',num2str(diay))

@@ -1,6 +1,7 @@
 function mask=makemask(DWI,nb0,PAR)
 
 close all
+disp('in makemask..')
 
 [Nx, Ny, numimgs] = size(DWI);
 N=Nx;
@@ -9,7 +10,10 @@ lenfillb0(1:nb0)=0;
 lenfillchk=Nx*Ny/2;
 
 numr=ceil(sqrt(numimgs))
-numc=numr+1;
+numc=numr;
+
+chknumimgs=numr*numc
+numimgs
 
 for i=1:numimgs
 
@@ -150,9 +154,11 @@ if numr>2
 
     h1=figure(1)
     set(h1, 'Visible', 'off');
-    set(h1, 'Position', [0 0 1300 650]);
     set(h1, 'Units', 'inches');
+    set(h1, 'Position', [10 7 20 10]);
+    
     for i=1:numimgs
+	i
         subplot(numr,numc,i)
         imagesc(DWI(:,:,i))
         if i<nb0+1
@@ -165,8 +171,9 @@ if numr>2
 
     h2=figure(2)
     set(h2, 'Visible', 'off');
-    set(h2, 'Position', [0 0 1300 650]);
     set(h2, 'Units', 'inches')
+    set(h2, 'Position', [10 7 20 10]);
+    
     for i=1:numimgs
         subplot(numr,numc,i)
         imagesc(mask(:,:,i))
